@@ -14,7 +14,7 @@ public class GestoreLibriTest {
 
     @BeforeEach
     public void setUp() {
-        gestore = GestoreLibri.getIstance();
+        gestore = GestoreLibri.getInstance();
         gestore.getLibri().clear(); // pulizia prima di testing
     }
 
@@ -26,7 +26,7 @@ public class GestoreLibriTest {
                 .isbn("9780451524935")
                 .genere("Distopico")
                 .valutazione(5)
-                .statoLettura("letto")
+                .statoLettura(Libro.StatoLettura.DA_LEGGERE)
                 .build();
 
         gestore.aggiungiLibro(libro);
@@ -43,7 +43,7 @@ public class GestoreLibriTest {
                 .isbn("9780451524935")
                 .genere("Distopico")
                 .valutazione(5)
-                .statoLettura("letto")
+                .statoLettura(Libro.StatoLettura.DA_LEGGERE)
                 .build();
 
         gestore.aggiungiLibro(libro);

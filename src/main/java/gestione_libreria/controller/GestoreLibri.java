@@ -1,5 +1,6 @@
 package gestione_libreria.controller;
 
+import gestione_libreria.memento.LibreriaMemento;
 import gestione_libreria.model.Libro;
 
 import java.util.ArrayList;
@@ -15,13 +16,16 @@ public class GestoreLibri {
 
     private GestoreLibri() {}
 
-    public static GestoreLibri getIstance() {
+    //Singleton: una sola istanza per GestoreLibri
+    public static GestoreLibri getInstance() {
         if (istanza == null) {
             istanza = new GestoreLibri();
         }
         return istanza;
     }
 
+
+    //metodi gestione libri
     public void aggiungiLibro(Libro libro) {
         this.libri.add(libro);
         notificaObserver();
@@ -36,6 +40,8 @@ public class GestoreLibri {
         return libri;
     }
 
+
+    //Observer
     public void aggiungiObserver(Observer osservatore) {
         this.osservatori.add(osservatore);
     }
@@ -45,4 +51,18 @@ public class GestoreLibri {
             o.aggiorna();
         }
     }
+
+
+    //Memento: ripristino stati passati libreria
+    public LibreriaMemento creaMemento() {
+        return new LibreriaMemento(new ArrayList<>(libri));
+    }
+
+    public void ripristinaDaMemento(LibreriaMemento memento) {
+        libri = new ArrayList<>(memento.getStato());
+        notificaObserver();
+    }
+
+
+
 }
