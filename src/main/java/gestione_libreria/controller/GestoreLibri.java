@@ -1,10 +1,10 @@
 package gestione_libreria.controller;
 
+import gestione_libreria.archivio.ArchivioLibri;
 import gestione_libreria.memento.LibreriaMemento;
 import gestione_libreria.model.Libro;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class GestoreLibri {
@@ -63,6 +63,7 @@ public class GestoreLibri {
         notificaObserver();
     }
 
-
-
+    public void caricaDaFile() {
+        this.libri = ArchivioLibri.caricaLibri();
+    }
 }

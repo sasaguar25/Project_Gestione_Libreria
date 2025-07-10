@@ -26,14 +26,14 @@ public class LibroFactory {
                 .build();
     }
 
-    public static Libro creaLibroCompleto(String titolo, String autore, String isbn, String genere, int valutazione, String stato) {
+    public static Libro creaLibroCompleto(String titolo, String autore, String isbn, String genere, int valutazione, Libro.StatoLettura stato) {
         return new Libro.Builder()
                 .titolo(titolo)
                 .autore(autore)
                 .isbn(isbn)
                 .genere(genere)
                 .valutazione(valutazione)
-                .statoLettura(Libro.StatoLettura.valueOf(stato))
+                .statoLettura(stato)
                 .build();
     }
 }

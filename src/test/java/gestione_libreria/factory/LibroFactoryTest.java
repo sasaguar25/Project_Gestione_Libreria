@@ -18,7 +18,7 @@ public class LibroFactoryTest{
     @Test
     public void testCreaLibroCompleto() {
         Libro libro = LibroFactory.creaLibroCompleto(
-                "1984", "George Orwell", "123456789", "Distopico", 5, "letto"
+                "1984", "George Orwell", "123456789", "Distopico", 5, Libro.StatoLettura.TERMINATO
         );
         assertEquals("1984", libro.getTitolo());
         assertEquals("George Orwell", libro.getAutore());
