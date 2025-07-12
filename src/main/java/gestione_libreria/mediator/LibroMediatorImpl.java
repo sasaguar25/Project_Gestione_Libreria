@@ -33,8 +33,8 @@ public class LibroMediatorImpl implements LibroMediator {
         this.listaPanel = listaPanel;
     }
 
-    @Override
-    public void aggiungiLibro() {
+
+    /*public void aggiungiLibro() {
         Libro nuovo = campoPanel.creaLibroDaCampi();
         if (nuovo == null) {
             JOptionPane.showMessageDialog(null, "Titolo e autore sono obbligatori!", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -45,6 +45,29 @@ public class LibroMediatorImpl implements LibroMediator {
         cmd.esegui();
         listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
         ArchivioLibri.salvaLibri(gestore.getLibri());
+    }*/
+
+    @Override
+    public boolean aggiungiLibro() {
+        Libro nuovo = campoPanel.creaLibroDaCampi();
+        if (nuovo == null) {
+            JOptionPane.showMessageDialog(null, "Titolo e autore sono obbligatori!", "Errore", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        for (Libro l: gestore.getLibri() ) {
+            if (l.getIsbn().equals(nuovo.getIsbn())) {
+                JOptionPane.showMessageDialog(null, "Errore! Codice ISBN già presente in lista.", "Errore", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
+        Command cmd = new AggiungiLibroCommand(gestore, nuovo);
+        storico.salvaStato(gestore.creaMemento());
+        cmd.esegui();
+        listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
+        ArchivioLibri.salvaLibri(gestore.getLibri());
+        return true;
     }
 
     @Override
@@ -61,10 +84,17 @@ public class LibroMediatorImpl implements LibroMediator {
     }
 
     @Override
-    public void modificaLibro() {
+    public boolean modificaLibro() {
         Libro selezionato = listaPanel.getLibroSelezionato();
         if (selezionato != null) {
             Libro modificato = campoPanel.creaLibroDaCampi();
+
+            for (Libro l: gestore.getLibri() ) {
+                if (l.getIsbn().equals(modificato.getIsbn())) {
+                    JOptionPane.showMessageDialog(null, "Errore! Codice ISBN già presente in lista.", "Errore", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
 
             Map<String, String> campiModificati = new HashMap<>();
 
@@ -95,6 +125,7 @@ public class LibroMediatorImpl implements LibroMediator {
                 ArchivioLibri.salvaLibri(gestore.getLibri());
             }
         }
+        return true;
     }
 
     @Override

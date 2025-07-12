@@ -3,9 +3,9 @@ package gestione_libreria.mediator;
 import gestione_libreria.model.Libro;
 
 public interface LibroMediator {
-    void aggiungiLibro();
+    boolean aggiungiLibro();
     void rimuoviLibro();
-    void modificaLibro();
+    boolean modificaLibro();
     void annullaUltimaAzione();
     void selezionaLibro(Libro libro);
     void cerca(String campo, String valore);

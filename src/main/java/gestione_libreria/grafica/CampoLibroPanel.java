@@ -1,7 +1,9 @@
 package gestione_libreria.grafica;
 
 
-import gestione_libreria.factory.LibroFactory;
+import gestione_libreria.factory.LibroBaseFactory;
+import gestione_libreria.factory.LibroCompletoFactory;
+import gestione_libreria.factory.LibroConISBNFactory;
 import gestione_libreria.mediator.LibroMediator;
 import gestione_libreria.model.Libro;
 
@@ -65,16 +67,18 @@ public class CampoLibroPanel extends JPanel {
 
         aggiungiBtn.addActionListener(e -> {
             if (mediator != null) {
-                mediator.aggiungiLibro();
-                pulisciCampi();
+                if(mediator.aggiungiLibro())
+                    pulisciCampi();
             }
         });
 
         modificaBtn.addActionListener(e -> {
-            mediator.modificaLibro();
-            pulisciCampi();
-            libroCorrente = null;
-            modificaBtn.setEnabled(false);
+            if(mediator.modificaLibro()) {
+                ;
+                pulisciCampi();
+                libroCorrente = null;
+                modificaBtn.setEnabled(false);
+            }
         });
 
         abilitaRilevamentoModifiche();
@@ -86,14 +90,14 @@ public class CampoLibroPanel extends JPanel {
 
     //builder del libro, distingue i casi in cui usare i diversi factory method
     public Libro creaLibroDaCampi() {
-        Libro libro= new Libro.Builder()
-                .titolo(titoloField.getText())
-                .autore(autoreField.getText())
-                .isbn(isbnField.getText())
-                .genere((String) genereBox.getSelectedItem())
-                .valutazione((Integer) valutazioneBox.getSelectedItem())
-                .statoLettura((Libro.StatoLettura) statoBox.getSelectedItem())
-                .build();
+        Libro libro= new LibroCompletoFactory(
+                titoloField.getText(),
+                autoreField.getText(),
+                isbnField.getText(),
+                (String) genereBox.getSelectedItem(),
+                (Integer) valutazioneBox.getSelectedItem(),
+                (Libro.StatoLettura) statoBox.getSelectedItem())
+                .creaLibro();
 
         if (titoloField.getText().isEmpty() || autoreField.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Titolo e Autore sono obbligatori.", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -103,15 +107,15 @@ public class CampoLibroPanel extends JPanel {
 
         // Usa Factory Method appropriato
         if (isbnField.getText().isEmpty() &&  (Integer)valutazioneBox.getSelectedItem() == 0) {
-            return LibroFactory.creaLibroBase(titoloField.getText(), autoreField.getText());
+            return new LibroBaseFactory(titoloField.getText(), autoreField.getText()).creaLibro();
         } else if (!isbnField.getText().isEmpty() && (Integer)valutazioneBox.getSelectedItem() == 0) {
-            return LibroFactory.creaLibroConIsbn(titoloField.getText(), autoreField.getText(), isbnField.getText());
+            return new LibroConISBNFactory(titoloField.getText(), autoreField.getText(), isbnField.getText()).creaLibro();
         } else {
-            return LibroFactory.creaLibroCompleto(titoloField.getText(), autoreField.getText(),
+            return new LibroCompletoFactory(titoloField.getText(), autoreField.getText(),
                     isbnField.getText().isEmpty() ? "N/A" : isbnField.getText(),
                     (String) genereBox.getSelectedItem(),
                     (Integer)valutazioneBox.getSelectedItem(),
-                    (Libro.StatoLettura) statoBox.getSelectedItem());
+                    (Libro.StatoLettura) statoBox.getSelectedItem()).creaLibro();
         }
 
     }

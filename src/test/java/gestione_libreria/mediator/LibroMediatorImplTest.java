@@ -1,7 +1,7 @@
 package gestione_libreria.mediator;
 
 import gestione_libreria.controller.GestoreLibri;
-import gestione_libreria.factory.LibroFactory;
+import gestione_libreria.factory.LibroCompletoFactory;
 import gestione_libreria.grafica.CampoLibroPanel;
 import gestione_libreria.grafica.ListaLibriPanel;
 import gestione_libreria.model.Libro;
@@ -36,7 +36,7 @@ public class LibroMediatorImplTest {
 
     @Test
     public void testAggiuntaLibro() {
-        Libro libro = LibroFactory.creaLibroCompleto("Titolo Test", "Autore Test", "123", "Narrativa", 5, Libro.StatoLettura.TERMINATO);
+        Libro libro = new LibroCompletoFactory("Titolo Test", "Autore Test", "123", "Narrativa", 5, Libro.StatoLettura.TERMINATO).creaLibro();
         when(campoPanel.creaLibroDaCampi()).thenReturn(libro);
 
         mediator.aggiungiLibro();
@@ -48,7 +48,7 @@ public class LibroMediatorImplTest {
 
     @Test
     public void testRimuoviLibro() {
-        Libro libro = LibroFactory.creaLibroCompleto("Rimuovi", "Autore", "456", "Saggio", 3, Libro.StatoLettura.IN_LETTURA);
+        Libro libro = new LibroCompletoFactory("Rimuovi", "Autore", "456", "Saggio", 3, Libro.StatoLettura.IN_LETTURA).creaLibro();
         gestore.getLibri().add(libro);
 
         when(listaPanel.getLibroSelezionato()).thenReturn(libro);
@@ -60,11 +60,11 @@ public class LibroMediatorImplTest {
 
     @Test
     public void testModificaLibro() {
-        Libro libro = LibroFactory.creaLibroCompleto("Titolo", "Autore", "789", "Giallo", 4, Libro.StatoLettura.DA_LEGGERE);
+        Libro libro = new LibroCompletoFactory("Titolo", "Autore", "789", "Giallo", 4, Libro.StatoLettura.DA_LEGGERE).creaLibro();
         gestore.getLibri().add(libro);
 
         when(listaPanel.getLibroSelezionato()).thenReturn(libro);
-        Libro modificato = LibroFactory.creaLibroCompleto("Titolo Mod", "Autore", "789", "Giallo", 5, Libro.StatoLettura.DA_LEGGERE);
+        Libro modificato = new LibroCompletoFactory("Titolo Mod", "Autore", "789", "Giallo", 5, Libro.StatoLettura.DA_LEGGERE).creaLibro();
         when(campoPanel.creaLibroDaCampi()).thenReturn(modificato);
 
         mediator.modificaLibro();
@@ -75,20 +75,20 @@ public class LibroMediatorImplTest {
 
     @Test
     public void testCercaPerTitolo() {
-        gestore.getLibri().add(LibroFactory.creaLibroCompleto("Harry Potter", "J.K. Rowling", "111", "Fantasy", 5, Libro.StatoLettura.TERMINATO));
-        gestore.getLibri().add(LibroFactory.creaLibroCompleto("Il Signore degli Anelli", "Tolkien", "222", "Fantasy", 5, Libro.StatoLettura.TERMINATO));
+        gestore.getLibri().add(new LibroCompletoFactory("Harry Potter", "J.K. Rowling", "111", "Fantasy", 5, Libro.StatoLettura.TERMINATO).creaLibro());
+        gestore.getLibri().add(new LibroCompletoFactory("Il Signore degli Anelli", "Tolkien", "222", "Fantasy", 5, Libro.StatoLettura.TERMINATO).creaLibro());
 
         mediator.cerca("Titolo", "Harry");
 
-        // Qui non possiamo verificare il contenuto interno, ma possiamo verificare che aggiorna la lista
+        //verifica aggiornamento lista
         verify(listaPanel).aggiornaLista(any());
     }
 
     @Test
     public void testFiltraEOrdina() {
-        gestore.getLibri().add(LibroFactory.creaLibroCompleto("Z", "A", "333", "Fantasy", 2, Libro.StatoLettura.IN_LETTURA));
-        gestore.getLibri().add(LibroFactory.creaLibroCompleto("A", "B", "444", "Fantasy", 4, Libro.StatoLettura.IN_LETTURA));
-        gestore.getLibri().add(LibroFactory.creaLibroCompleto("M", "C", "555", "Giallo", 3, Libro.StatoLettura.TERMINATO));
+        gestore.getLibri().add(new LibroCompletoFactory("Z", "A", "333", "Fantasy", 2, Libro.StatoLettura.IN_LETTURA).creaLibro());
+        gestore.getLibri().add(new LibroCompletoFactory("A", "B", "444", "Fantasy", 4, Libro.StatoLettura.IN_LETTURA).creaLibro());
+        gestore.getLibri().add(new LibroCompletoFactory("M", "C", "555", "Giallo", 3, Libro.StatoLettura.TERMINATO).creaLibro());
 
         // Solo libri "Fantasy", valutazione = 4, ordinati per Titolo decrescente
         mediator.filtraEOrdina("Fantasy", Libro.StatoLettura.IN_LETTURA, 4, "Titolo", "Decrescente");
