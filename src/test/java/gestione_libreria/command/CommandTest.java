@@ -1,10 +1,11 @@
 package gestione_libreria.command;
 
-import gestione_libreria.controller.GestoreLibri;
+import gestione_libreria.controller_command.AggiungiLibroCommand;
+import gestione_libreria.controller_command.GestoreLibri;
+import gestione_libreria.controller_command.ModificaLibroCommand;
 import gestione_libreria.model.Libro;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import gestione_libreria.model.Libro.StatoLettura;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,14 +73,13 @@ public class CommandTest {
                 .statoLettura(Libro.StatoLettura.DA_LEGGERE)
                 .build();
 
-        // Campi da modificare (solo titolo e valutazione)
+
         Map<String, String> modifiche = new HashMap<>();
         modifiche.put("titolo", "Titolo Aggiornato");
         modifiche.put("valutazione", "5");
 
-        ModificaLibroCommand comando = new ModificaLibroCommand(libro, modifiche);
+        ModificaLibroCommand comando = new ModificaLibroCommand(libro, modifiche,gestore);
 
-        // Esegui modifica
         comando.esegui();
 
         // Verifica modifiche applicate
@@ -89,10 +89,8 @@ public class CommandTest {
         assertEquals("Fantasy", libro.getGenere());
         assertEquals(Libro.StatoLettura.DA_LEGGERE, libro.getStatoLettura());
 
-        // Annulla modifica
         comando.annulla();
 
-        // Verifica che i valori originali siano ripristinati
         assertEquals("Titolo Originale", libro.getTitolo());
         assertEquals(4, libro.getValutazione());
     }
@@ -110,10 +108,9 @@ public class CommandTest {
                 .build();
         Map<String, String> modifiche = new HashMap<>();
 
-        ModificaLibroCommand comando = new ModificaLibroCommand(libro, modifiche);
+        ModificaLibroCommand comando = new ModificaLibroCommand(libro, modifiche,gestore);
         comando.esegui(); // Non deve modificare nulla
 
-        // Tutti i valori restano invariati
         assertEquals("T1", libro.getTitolo());
         assertEquals("A1", libro.getAutore());
         assertEquals("111", libro.getIsbn());

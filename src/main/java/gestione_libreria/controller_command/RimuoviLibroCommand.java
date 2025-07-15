@@ -1,6 +1,5 @@
-package gestione_libreria.command;
+package gestione_libreria.controller_command;
 
-import gestione_libreria.controller.GestoreLibri;
 import gestione_libreria.model.Libro;
 
 public class RimuoviLibroCommand implements Command {

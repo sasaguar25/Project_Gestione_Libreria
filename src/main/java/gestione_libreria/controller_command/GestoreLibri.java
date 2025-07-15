@@ -1,6 +1,7 @@
-package gestione_libreria.controller;
+package gestione_libreria.controller_command;
 
 import gestione_libreria.archivio.ArchivioLibri;
+import gestione_libreria.grafica.Observer;
 import gestione_libreria.memento.LibreriaMemento;
 import gestione_libreria.model.Libro;
 
@@ -12,6 +13,7 @@ public class GestoreLibri {
     private static GestoreLibri istanza;
 
     private List<Libro> libri = new ArrayList<>();
+    private List<Libro> libriFiltrati = new ArrayList<>();
     private List<Observer> osservatori = new ArrayList<>();
 
     private GestoreLibri() {}
@@ -23,7 +25,6 @@ public class GestoreLibri {
         }
         return istanza;
     }
-
 
     //metodi gestione libri
     public void aggiungiLibro(Libro libro) {
@@ -40,6 +41,10 @@ public class GestoreLibri {
         return libri;
     }
 
+    public void setLibriFiltrati(List<Libro> libriFiltrati){
+        this.libriFiltrati = libriFiltrati;
+        notificaObserver();
+    }
 
     //Observer
     public void aggiungiObserver(Observer osservatore) {
@@ -47,8 +52,15 @@ public class GestoreLibri {
     }
 
     private void notificaObserver() {
+        List<Libro> listaAggiornata=null;
+        if(!(libriFiltrati==null)) {
+            listaAggiornata = new ArrayList<>(libriFiltrati);
+        }
+        else {
+            listaAggiornata = libri;
+        }
         for (Observer o : osservatori) {
-            o.aggiorna();
+            o.aggiorna(listaAggiornata);
         }
     }
 
@@ -58,7 +70,7 @@ public class GestoreLibri {
         return new LibreriaMemento(new ArrayList<>(libri));
     }
 
-    public void ripristinaDaMemento(LibreriaMemento memento) {
+    protected void ripristinaDaMemento(LibreriaMemento memento) {
         libri = new ArrayList<>(memento.getStato());
         notificaObserver();
     }

@@ -1,6 +1,8 @@
 package gestione_libreria.archivio;
 
-import gestione_libreria.controller.GestoreLibri;
+import gestione_libreria.controller_command.AggiungiLibroCommand;
+import gestione_libreria.controller_command.Command;
+import gestione_libreria.controller_command.GestoreLibri;
 import gestione_libreria.factory.LibroCompletoFactory;
 import gestione_libreria.model.Libro;
 
@@ -25,8 +27,10 @@ public class ArchivioLibriTest {
                 Libro.StatoLettura.DA_LEGGERE)
                 .creaLibro();
 
-        gestore.aggiungiLibro(libro1);
-        gestore.aggiungiLibro(libro2);
+        Command comando1 = new AggiungiLibroCommand(gestore, libro1);
+        Command comando2 = new AggiungiLibroCommand(gestore, libro2);
+        comando1.esegui();
+        comando2.esegui();
 
         // Salva su JSON
         ArchivioLibri.salvaLibri(gestore.getLibri());

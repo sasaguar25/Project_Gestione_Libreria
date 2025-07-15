@@ -1,6 +1,5 @@
 package gestione_libreria.grafica;
 
-import gestione_libreria.controller.GestoreLibri;
 import gestione_libreria.mediator.LibroMediator;
 import gestione_libreria.model.Libro;
 
@@ -10,8 +9,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//è la sezione dove vengono mostrati i libri
-public class ListaLibriPanel extends JPanel {
+//è la sezione dove vengono mostrati i libri, osservatore di GestoreLibri
+public class ListaLibriPanel extends JPanel implements Observer {
     private JTable tabella;
     private DefaultTableModel modello; //dati dei libri
     private JButton rimuoviBtn = new JButton("Rimuovi");
@@ -58,7 +57,7 @@ public class ListaLibriPanel extends JPanel {
 
     public void aggiornaLista(List<Libro> libriDaMostrare) {
         modello.setRowCount(0);
-        listaCorrente = libriDaMostrare; // ✅ memorizza
+        listaCorrente = libriDaMostrare;
         for (Libro libro : libriDaMostrare) {
             modello.addRow(new Object[]{
                     libro.getTitolo(),
@@ -77,6 +76,11 @@ public class ListaLibriPanel extends JPanel {
             return listaCorrente.get(i);
         }
         return null;
+    }
+
+    @Override
+    public void aggiorna(List<Libro> libriDaMostrare) {
+        aggiornaLista(libriDaMostrare);
     }
 }
 

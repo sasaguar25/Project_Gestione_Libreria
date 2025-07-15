@@ -1,6 +1,6 @@
 package gestione_libreria.mediator;
 
-import gestione_libreria.controller.GestoreLibri;
+import gestione_libreria.controller_command.GestoreLibri;
 import gestione_libreria.factory.LibroCompletoFactory;
 import gestione_libreria.grafica.CampoLibroPanel;
 import gestione_libreria.grafica.ListaLibriPanel;

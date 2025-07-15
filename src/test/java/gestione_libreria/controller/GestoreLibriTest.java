@@ -2,11 +2,11 @@ package gestione_libreria.controller;
 
 
 
+import gestione_libreria.controller_command.GestoreLibri;
 import gestione_libreria.model.Libro;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GestoreLibriTest {
 
@@ -31,8 +31,8 @@ public class GestoreLibriTest {
 
         gestore.aggiungiLibro(libro);
 
-        assertEquals(1, gestore.getLibri().size());
-        assertEquals("1984", gestore.getLibri().get(0).getTitolo());
+        Assertions.assertEquals(1, gestore.getLibri().size());
+        Assertions.assertEquals("1984", gestore.getLibri().get(0).getTitolo());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class GestoreLibriTest {
         gestore.aggiungiLibro(libro);
         gestore.rimuoviLibro(libro);
 
-        assertTrue(gestore.getLibri().isEmpty());
+        Assertions.assertTrue(gestore.getLibri().isEmpty());
     }
 }
 

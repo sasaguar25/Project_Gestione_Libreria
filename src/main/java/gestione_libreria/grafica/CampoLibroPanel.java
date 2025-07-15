@@ -100,7 +100,8 @@ public class CampoLibroPanel extends JPanel {
                 .creaLibro();
 
         if (titoloField.getText().isEmpty() || autoreField.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Titolo e Autore sono obbligatori.", "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Titolo e Autore sono obbligatori.",
+                    "Errore", JOptionPane.ERROR_MESSAGE);
             System.out.print("null");
             return null;
         }

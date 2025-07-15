@@ -1,11 +1,12 @@
 package gestione_libreria.mediator;
 
 import gestione_libreria.archivio.ArchivioLibri;
-import gestione_libreria.command.AggiungiLibroCommand;
-import gestione_libreria.command.Command;
-import gestione_libreria.command.ModificaLibroCommand;
-import gestione_libreria.command.RimuoviLibroCommand;
-import gestione_libreria.controller.GestoreLibri;
+import gestione_libreria.controller_command.AggiungiLibroCommand;
+import gestione_libreria.controller_command.ModificaLibroCommand;
+import gestione_libreria.controller_command.RimuoviLibroCommand;
+import gestione_libreria.controller_command.RipristinoCommand;
+import gestione_libreria.controller_command.Command;
+import gestione_libreria.controller_command.GestoreLibri;
 import gestione_libreria.grafica.CampoLibroPanel;
 import gestione_libreria.grafica.ListaLibriPanel;
 import gestione_libreria.memento.Caretaker;
@@ -33,31 +34,19 @@ public class LibroMediatorImpl implements LibroMediator {
         this.listaPanel = listaPanel;
     }
 
-
-    /*public void aggiungiLibro() {
-        Libro nuovo = campoPanel.creaLibroDaCampi();
-        if (nuovo == null) {
-            JOptionPane.showMessageDialog(null, "Titolo e autore sono obbligatori!", "Errore", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        Command cmd = new AggiungiLibroCommand(gestore, nuovo);
-        storico.salvaStato(gestore.creaMemento());
-        cmd.esegui();
-        listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
-        ArchivioLibri.salvaLibri(gestore.getLibri());
-    }*/
-
     @Override
     public boolean aggiungiLibro() {
         Libro nuovo = campoPanel.creaLibroDaCampi();
         if (nuovo == null) {
-            JOptionPane.showMessageDialog(null, "Titolo e autore sono obbligatori!", "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Titolo e autore sono obbligatori!",
+                    "Errore", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         for (Libro l: gestore.getLibri() ) {
             if (l.getIsbn().equals(nuovo.getIsbn())) {
-                JOptionPane.showMessageDialog(null, "Errore! Codice ISBN già presente in lista.", "Errore", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "Errore! Codice ISBN già presente in lista.", "Errore", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -65,7 +54,6 @@ public class LibroMediatorImpl implements LibroMediator {
         Command cmd = new AggiungiLibroCommand(gestore, nuovo);
         storico.salvaStato(gestore.creaMemento());
         cmd.esegui();
-        listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
         ArchivioLibri.salvaLibri(gestore.getLibri());
         return true;
     }
@@ -78,7 +66,6 @@ public class LibroMediatorImpl implements LibroMediator {
             storico.salvaStato(gestore.creaMemento());
             cmd.esegui();
             campoPanel.pulisciCampi();
-            listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
             ArchivioLibri.salvaLibri(gestore.getLibri());
         }
     }
@@ -89,9 +76,11 @@ public class LibroMediatorImpl implements LibroMediator {
         if (selezionato != null) {
             Libro modificato = campoPanel.creaLibroDaCampi();
 
+            int cnt=0;
             for (Libro l: gestore.getLibri() ) {
-                if (l.getIsbn().equals(modificato.getIsbn())) {
-                    JOptionPane.showMessageDialog(null, "Errore! Codice ISBN già presente in lista.", "Errore", JOptionPane.ERROR_MESSAGE);
+                if (l != selezionato && l.getIsbn().equals(modificato.getIsbn())) {
+                    JOptionPane.showMessageDialog(null, "Errore! Codice ISBN già " +
+                            "presente in lista.", "Errore", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -118,10 +107,9 @@ public class LibroMediatorImpl implements LibroMediator {
             }
 
             if (!campiModificati.isEmpty()) {
-                Command cmd = new ModificaLibroCommand(selezionato, campiModificati);
+                Command cmd = new ModificaLibroCommand(selezionato, campiModificati,gestore);
                 storico.salvaStato(gestore.creaMemento());
                 cmd.esegui();
-                listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
                 ArchivioLibri.salvaLibri(gestore.getLibri());
             }
         }
@@ -130,8 +118,8 @@ public class LibroMediatorImpl implements LibroMediator {
 
     @Override
     public void annullaUltimaAzione() {
-        gestore.ripristinaDaMemento(storico.ripristinaUltimo());
-        listaPanel.aggiornaLista(libriFiltrati != null ? libriFiltrati : gestore.getLibri());
+        Command cmd = new RipristinoCommand(gestore,storico);
+        cmd.esegui();
         ArchivioLibri.salvaLibri(gestore.getLibri());
     }
 
@@ -163,13 +151,14 @@ public class LibroMediatorImpl implements LibroMediator {
                     })
                     .collect(Collectors.toList());
         }
-        listaPanel.aggiornaLista(libriFiltrati);
+        gestore.setLibriFiltrati(libriFiltrati);
     }
 
 
 
     @Override
-    public void filtraEOrdina(String genere, Libro.StatoLettura stato, Integer valutazione, String campoOrdina, String direzione) {
+    public void filtraEOrdina(String genere, Libro.StatoLettura stato, Integer valutazione,
+                              String campoOrdina, String direzione) {
         List<Libro> base = GestoreLibri.getInstance().getLibri(); // sempre dalla base
 
             List<Libro> filtrati = base.stream()
@@ -200,14 +189,14 @@ public class LibroMediatorImpl implements LibroMediator {
             filtrati.sort(comparator);
 
             libriFiltrati = filtrati;
+            gestore.setLibriFiltrati(libriFiltrati);
 
-            listaPanel.aggiornaLista(libriFiltrati);
     }
 
     @Override
     public void resetVista() {
         libriFiltrati = null;
-        listaPanel.aggiornaLista(GestoreLibri.getInstance().getLibri());
+        gestore.setLibriFiltrati(libriFiltrati);
     }
 }
 

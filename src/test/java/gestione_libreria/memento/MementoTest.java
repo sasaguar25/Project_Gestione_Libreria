@@ -1,6 +1,9 @@
 package gestione_libreria.memento;
 
-import gestione_libreria.controller.GestoreLibri;
+import gestione_libreria.controller_command.AggiungiLibroCommand;
+import gestione_libreria.controller_command.Command;
+import gestione_libreria.controller_command.GestoreLibri;
+import gestione_libreria.controller_command.RipristinoCommand;
 import gestione_libreria.model.Libro;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +25,9 @@ public class MementoTest {
                 .genere("Distopico")
                 .valutazione(5)
                 .statoLettura(Libro.StatoLettura.TERMINATO)
-                .build();gestore.aggiungiLibro(libro1);
+                .build();
+        Command comando1 = new AggiungiLibroCommand(gestore, libro1);
+        comando1.esegui();
         storico.salvaStato(gestore.creaMemento());
         Libro libro2 = new Libro.Builder()
                 .titolo("Frankenstein")
@@ -32,13 +37,15 @@ public class MementoTest {
                 .valutazione(5)
                 .statoLettura(Libro.StatoLettura.TERMINATO)
                 .build();
-        gestore.aggiungiLibro(libro2);
+        Command comando2 = new AggiungiLibroCommand(gestore, libro2);
+        comando2.esegui();
 
         // Verifico che ci siano 2 libri ora
         assertEquals(2, gestore.getLibri().size());
 
         // Ripristino allo stato precedente
-        gestore.ripristinaDaMemento(storico.ripristinaUltimo());
+        Command comando3 = new RipristinoCommand(gestore, storico);
+        comando3.esegui();
 
         // Verifico che ci sia solo libro1
         assertEquals(1, gestore.getLibri().size());

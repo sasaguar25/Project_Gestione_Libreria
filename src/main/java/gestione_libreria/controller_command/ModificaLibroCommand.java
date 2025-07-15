@@ -1,4 +1,4 @@
-package gestione_libreria.command;
+package gestione_libreria.controller_command;
 
 import gestione_libreria.model.Libro;
 
@@ -6,13 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModificaLibroCommand implements Command {
-    private final Libro libro;
+    private final Libro libro,modificato;
     private final Map<String, String> nuoviValori;
     private final Map<String, String> backupValori = new HashMap<>();
+    private GestoreLibri gestore;
 
-    public ModificaLibroCommand(Libro libro, Map<String, String> nuoviValori) {
+    public ModificaLibroCommand(Libro libro, Map<String, String> nuoviValori, GestoreLibri gestore) {
         this.libro = libro;
+        this.modificato=libro;
         this.nuoviValori = nuoviValori;
+        this.gestore = gestore;
     }
 
     @Override
@@ -24,60 +27,39 @@ public class ModificaLibroCommand implements Command {
             switch (campo.toLowerCase()) {
                 case "titolo":
                     backupValori.put("titolo", libro.getTitolo());
-                    libro.setTitolo(nuovoValore);
+                    modificato.setTitolo(nuovoValore);
                     break;
                 case "autore":
                     backupValori.put("autore", libro.getAutore());
-                    libro.setAutore(nuovoValore);
+                    modificato.setAutore(nuovoValore);
                     break;
                 case "isbn":
                     backupValori.put("isbn", libro.getIsbn());
-                    libro.setIsbn(nuovoValore);
+                    modificato.setIsbn(nuovoValore);
                     break;
                 case "genere":
                     backupValori.put("genere", libro.getGenere());
-                    libro.setGenere(nuovoValore);
+                    modificato.setGenere(nuovoValore);
                     break;
                 case "valutazione":
                     backupValori.put("valutazione", String.valueOf(libro.getValutazione()));
-                    libro.setValutazione(Integer.parseInt(nuovoValore));
+                    modificato.setValutazione(Integer.parseInt(nuovoValore));
                     break;
                 case "stato":
                     backupValori.put("stato", libro.getStatoLettura().name());
-                    libro.setStatoLettura(Libro.StatoLettura.valueOf(nuovoValore));
+                    modificato.setStatoLettura(Libro.StatoLettura.valueOf(nuovoValore));
                     break;
                 default:
                     throw new IllegalArgumentException("Campo non valido: " + campo);
             }
         }
+        gestore.rimuoviLibro(libro);
+        gestore.aggiungiLibro(modificato);
     }
 
     @Override
     public void annulla() {
-        for (Map.Entry<String, String> entry : backupValori.entrySet()) {
-            String campo = entry.getKey();
-            String valorePrecedente = entry.getValue();
-
-            switch (campo.toLowerCase()) {
-                case "titolo":
-                    libro.setTitolo(valorePrecedente);
-                    break;
-                case "autore":
-                    libro.setAutore(valorePrecedente);
-                    break;
-                case "isbn":
-                    libro.setIsbn(valorePrecedente);
-                    break;
-                case "genere":
-                    libro.setGenere(valorePrecedente);
-                    break;
-                case "valutazione":
-                    libro.setValutazione(Integer.parseInt(valorePrecedente));
-                    break;
-                case "stato":
-                    libro.setStatoLettura(Libro.StatoLettura.valueOf(valorePrecedente));
-                    break;
-            }
-        }
+        gestore.rimuoviLibro(modificato);
+        gestore.aggiungiLibro(libro);
     }
 }
